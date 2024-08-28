@@ -239,6 +239,8 @@ namespace csp
 
       ~IteratorLike() noexcept = default;
 
+      std::size_t operator()() const noexcept { return index_; }
+
       NumberLikeType operator*() const noexcept { return obj_[index_]; }
 
       IteratorLike& operator++() noexcept

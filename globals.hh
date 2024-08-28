@@ -91,13 +91,13 @@ namespace ps
   inline constexpr double ps_ortho1S_annihilation_rate = 7.039979 * u::MHz;
   inline constexpr double ps_para1S_annihilation_rate = 7.989618 * u::GHz;
 
-  inline constexpr double transition_angular_frequency = (ps_ortho2P1_binding_energy - ps_ortho1S_binding_energy) / u::hbar;
+  inline constexpr double transition_angfreq = (ps_ortho2P1_binding_energy - ps_ortho1S_binding_energy) / u::hbar;
   inline constexpr double n_243 = 1.00030352; // refractive index at 243nm in the air
 
   inline constexpr double E_ps = m_ps * u::c * u::c + ps_ortho1S_binding_energy; // rest energy of 1S ortho-positronium
 
-  inline constexpr double recoil = u::hbar * transition_angular_frequency / u::c;
-  inline constexpr double recoil_angfreq = transition_angular_frequency * recoil / (m_ps * u::c);
+  inline constexpr double recoil = u::hbar * transition_angfreq / u::c;
+  inline constexpr double recoil_angfreq = transition_angfreq * recoil / (m_ps * u::c);
 }
 
 
