@@ -83,6 +83,7 @@ namespace csp
     }
   }
 
+
   /*
     functions for utility
   */
@@ -108,6 +109,14 @@ namespace csp
       } else {
         return raw_path;
       }
+    }
+
+
+    inline std::string ToString(const double value, const int precision)
+    {
+      std::ostringstream out;
+      out << std::fixed << std::setprecision(precision) << value;
+      return out.str();
     }
   }
 
@@ -191,6 +200,14 @@ namespace csp
     }
 
     ~Range() noexcept = default;
+
+    Range(const Range<NumberLikeType>& rh) = delete;
+
+    Range(Range<NumberLikeType>&& rh) = default;
+
+    Range& operator=(const Range<NumberLikeType>& rh) = delete;
+
+    Range& operator=(Range<NumberLikeType>&& rh) = default;
 
     virtual NumberLikeType operator[](const std::size_t index) const noexcept
     {
