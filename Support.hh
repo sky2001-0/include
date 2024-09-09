@@ -222,13 +222,13 @@ namespace csp
       return (*this)[index];
     }
 
-    NumberLikeType get_front() const noexcept { return front_; }
+    NumberLikeType front() const noexcept { return front_; }
 
-    NumberLikeType get_back() const noexcept { return (*this)[size_ - 1]; }
+    NumberLikeType back() const noexcept { return (*this)[size_ - 1]; }
 
-    std::size_t get_size() const noexcept { return size_; }
+    std::size_t size() const noexcept { return size_; }
 
-    NumberLikeType get_step() const noexcept { return step_; }
+    NumberLikeType step() const noexcept { return step_; }
 
     std::vector<NumberLikeType> ToVector() const noexcept
     {

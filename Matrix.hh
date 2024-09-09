@@ -34,18 +34,6 @@ namespace csp
     private:
       std::array<ElemType, row_size_ * col_size_> arr_;
 
-      ElemType& getf(const std::size_t row, const std::size_t col) noexcept
-      {
-        return arr_[row * col_size_ + col];
-      }
-
-      ElemType cgetf(
-        const std::size_t row, const std::size_t col
-      ) const noexcept
-      {
-        return arr_[row * col_size_ + col];
-      }
-
 
     public:
       Matrix() = default;
@@ -88,6 +76,28 @@ namespace csp
       ElemType cget(const std::size_t row, const std::size_t col) const
       {
         return arr_.at(row * col_size_ + col);
+      }
+
+      ElemType& getf(const std::size_t i) noexcept
+      {
+        return arr_[i];
+      }
+
+      ElemType cgetf(const std::size_t i) const noexcept
+      {
+        return arr_[i];
+      }
+
+      ElemType& getf(const std::size_t row, const std::size_t col) noexcept
+      {
+        return arr_[row * col_size_ + col];
+      }
+
+      ElemType cgetf(
+        const std::size_t row, const std::size_t col
+      ) const noexcept
+      {
+        return arr_[row * col_size_ + col];
       }
 
 
