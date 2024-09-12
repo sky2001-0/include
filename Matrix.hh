@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <array>
 #include <complex>
+#include <functional>
 #include <type_traits>
 
 
@@ -128,10 +129,7 @@ namespace csp
         Matrix<ElemType, row_size_, col_size_> result;
 
         std::transform(
-          arr_.begin(), arr_.end(), rh.arr_.begin(), arr_.begin(),
-          [](const ElemType& elem1, const ElemType& elem2) {
-            return elem1 + elem2;
-          }
+          arr_.begin(), arr_.end(), rh.arr_.begin(), arr_.begin(), std::plus<>()
         );
       }
 
@@ -143,9 +141,7 @@ namespace csp
 
         std::transform(
           arr_.begin(), arr_.end(), rh.arr_.begin(), result.arr_.begin(),
-          [](const ElemType& elem1, const ElemType& elem2) {
-            return elem1 + elem2;
-          }
+          std::plus<>()
         );
         return result;
       }
@@ -178,9 +174,7 @@ namespace csp
 
         std::transform(
           arr_.begin(), arr_.end(), rh.arr_.begin(), arr_.begin(),
-          [](const ElemType& elem1, const ElemType& elem2) {
-            return elem1 - elem2;
-          }
+          std::minus<>()
         );
       }
 
@@ -192,9 +186,7 @@ namespace csp
 
         std::transform(
           arr_.begin(), arr_.end(), rh.arr_.begin(), result.arr_.begin(),
-          [](const ElemType& elem1, const ElemType& elem2) {
-            return elem1 - elem2;
-          }
+          std::minus<>()
         );
         return result;
       }

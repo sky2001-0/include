@@ -6,9 +6,11 @@
 #include <cstddef>
 #include <ctime>
 #include <filesystem>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <mutex>
+#include <numeric>
 #include <random>
 #include <sstream>
 #include <stdexcept>
@@ -80,6 +82,17 @@ namespace csp
       } else {
         return std::sin(x) / x;
       }
+    }
+
+
+    inline int Factorial(unsigned int n)
+    {
+      if (n > 12) {
+        throw std::range_error("int overflow");
+      }
+      std::vector<unsigned int> ran(n);
+      std::iota(ran.begin(), ran.end(), 1);
+      return std::accumulate(ran.begin(), ran.end(), 1, std::multiplies<>());
     }
   }
 
