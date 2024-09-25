@@ -69,6 +69,7 @@ namespace u
   inline constexpr double hbar = h / tau; // reduced Planck constant
   inline constexpr double epsilon_0 = 8.8541878128e-12 * F / m; // electric constant
   inline constexpr double m_e = 9.1093837015e-31 * kg; // mass of electron
+  inline constexpr double m_p = 1.67262192595e-27 * kg; // mass of proton
   inline constexpr double P_0 = 101325. * J / m / m / m; // standard atmosphere
   inline constexpr double a_0 = (2. * epsilon_0 * h * hbar) / (m_e * e * e); // Bohr radius
   inline constexpr double alpha = e * e / (2. * epsilon_0 * h * c); // fine-structure constant
