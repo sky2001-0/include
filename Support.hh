@@ -177,9 +177,9 @@ namespace csp
     }
 
     Range(
-      const NumberLikeType&& front,
-      const NumberLikeType&& step,
-      const std::size_t&& size
+      const NumberLikeType& front,
+      const NumberLikeType& step,
+      const std::size_t& size
     ) noexcept
     : front_(front), step_(step), size_(size)
     {
