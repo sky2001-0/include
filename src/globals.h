@@ -14,6 +14,9 @@ namespace u
   inline constexpr double ps = 1e-12 * s;
   inline constexpr double fs = 1e-15 * s;
 
+  inline constexpr double min = 60. * s;
+  inline constexpr double hour = 3600. * s;
+
   inline constexpr double Hz  = 1. / s;
   inline constexpr double kHz = 1e+3 * Hz;
   inline constexpr double MHz = 1e+6 * Hz;
@@ -27,12 +30,17 @@ namespace u
   inline constexpr double um = 1e-6 * m;
   inline constexpr double nm = 1e-9 * m;
   inline constexpr double pm = 1e-12 * m;
+  inline constexpr double km = 1e+3 * m;
 
   inline constexpr double kg = 1.;
+  inline constexpr double g = 1e-3 * kg;
+  inline constexpr double mg = 1e-6 * kg;
 
   inline constexpr double A = 1.;
+  inline constexpr double mA = 1e-3 * A;
 
   inline constexpr double K = 1.;
+  inline constexpr double mK = 1e-3 * K;
 
   inline constexpr double mol = 1.;
 
