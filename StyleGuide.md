@@ -6,15 +6,13 @@
 
 - 変数、名前空間 : "snake_case"
 
-- テンプレート変数、メンバ変数 : "snake_case" + "_"
+- メンバ変数 : "snake_case" + "_"
 
-- static const メンバ : "k" + "PascalCase"
+- テンプレート変数、static const メンバ変数 : "k" + "PascalCase"
 
 - クラス、型、関数、メソッド : "PascalCase"
 
-- 以下は例外的に : "snake_case"
-
-  `begin / end`, `cbegin / cend`, `rbegin / rend`, `size`, `data`, `at`, `get_*`, `cget_*`, `*_to_*`
+  - ただし、標準ライブラリとの互換のためにいくつかのメンバ関数は "snake_case"
 
 
 ## 括弧
@@ -34,6 +32,7 @@ switch (ex) {
   }
 }
 
+[[nodiscard]]
 void Func(int a)
 {
 }
@@ -45,6 +44,13 @@ class MyClass
 namespace my_space
 {
 }
+
+auto f = [](int x, int y) {
+  return x + y;
+};
+
+template <typename T>
+  requires std::is_integral_v<T>
 ```
 
 
@@ -99,10 +105,6 @@ namespace my_space
 各ブロックごとに２行空ける。
 ブロック内は基本的に１行ずつ空ける。
 
-- テンプレートに関わる制約
-
-  必要がなければSFINAEを用いずに、`static_assert`を用いる。
-
 - 型エイリアス、クラス内クラスの前方宣言
 
 - static ファクトリ関数
@@ -136,11 +138,9 @@ namespace my_space
 
 - `noexcept` は、つけられる場合はつけること。
 
-- 文字リテラルを除き、一行を80字以内におさめる。
+- 文字列リテラルを除き、一行を80字以内におさめる。
 
-- コメントは直上につけること。
-
-- 引数は基本型を除き参照とすること。
+- 引数については、基本型や`std::complex<double>`等は値渡し、それ以外は参照渡しとすること。
 
 - クラスメンバは、基本型、コンテナ型、ポインタ、スマートポインタのいずれかにすること。
 

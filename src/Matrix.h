@@ -4,33 +4,27 @@
 #include <algorithm>
 #include <array>
 #include <complex>
+#include <concepts>
 #include <cstddef>
 #include <functional>
+#include <ranges>
 #include <type_traits>
 
 
 
-namespace csp
+namespace csp::math
 {
-  template <typename Elem, std::size_t row_size_, std::size_t col_size_>
+  template <typename Elem, std::size_t kRow, std::size_t kCol>
+    requires (
+      std::is_arithmetic_v<Elem> || std::is_same_v<Elem, std::complex<double>>
+    )
   class Matrix
   {
-    static_assert(
-      std::is_arithmetic_v<Elem> || std::is_same_v<Elem, std::complex<double>>,
-      "Template parameter 'Elem' must be an arithmetic type or std::complex<double>."
-    );
-
-
-    using Mat = Matrix<Elem, row_size_, col_size_>;
+    using Mat = Matrix<Elem, kRow, kCol>;
 
 
   private:
-    std::array<Elem, row_size_ * col_size_> arr_;
-
-    static void Assert_if_not_regular() noexcept
-    {
-      static_assert(row_size_ == col_size_, "Matrix is not regular.");
-    }
+    std::array<Elem, kRow * kCol> arr_;
 
 
   public:
@@ -67,12 +61,12 @@ namespace csp
 
     Elem& get(const std::size_t row, const std::size_t col)
     {
-      return arr_.at(row * col_size_ + col);
+      return arr_.at(row * kCol + col);
     }
 
     Elem cget(const std::size_t row, const std::size_t col) const
     {
-      return arr_.at(row * col_size_ + col);
+      return arr_.at(row * kCol + col);
     }
 
     Elem& getf(const std::size_t i) noexcept
@@ -87,127 +81,135 @@ namespace csp
 
     Elem& getf(const std::size_t row, const std::size_t col) noexcept
     {
-      return arr_[row * col_size_ + col];
+      return arr_[row * kCol + col];
     }
 
-    Elem cgetf(
-      const std::size_t row, const std::size_t col
-    ) const noexcept
+    Elem cgetf(const std::size_t row, const std::size_t col) const noexcept
     {
-      return arr_[row * col_size_ + col];
+      return arr_[row * kCol + col];
     }
 
+
+    Mat operator-() const noexcept
+    {
+      Mat mat = *this;
+      mat *= Elem(-1);
+      return mat;
+    }
 
     void operator+=(const Elem rh) noexcept
+      requires (kRow == kCol)
     {
-      Assert_if_not_regular();
-
-      for (std::size_t i = 0.; i < row_size_; ++i) {
+      for (std::size_t i = 0; i < kRow; ++i) {
         getf(i, i) += rh;
       }
     }
 
     Mat operator+(const Elem rh) const noexcept
+      requires (kRow == kCol)
     {
-      Assert_if_not_regular();
-
-      Mat result = *this;
-      result += rh;
-      return result;
+      Mat mat = *this;
+      mat += rh;
+      return mat;
     }
 
-    void operator+=(const Mat rh) noexcept
+    template <typename Elem2, std::size_t kRow2, std::size_t kCol2>
+      requires (kRow2 == kCol2)
+    friend constexpr Matrix<Elem2, kRow2, kCol2> operator+(
+      const Elem2 lh, const Matrix<Elem2, kRow2, kCol2>& rh
+    ) noexcept
     {
-      Mat result;
-
-      std::transform(
-        arr_.begin(), arr_.end(), rh.arr_.begin(), arr_.begin(), std::plus<>()
-      );
+      return rh + lh;
     }
 
-    Mat operator+(const Mat rh) const noexcept
+    void operator+=(const Mat& rh) noexcept
     {
-      Mat result;
+      std::ranges::transform(arr_, rh.arr_, arr_.begin(), std::plus<>());
+    }
 
-      std::transform(
-        arr_.begin(), arr_.end(), rh.arr_.begin(), result.arr_.begin(),
-        std::plus<>()
-      );
-      return result;
+    Mat operator+(const Mat& rh) const noexcept
+    {
+      Mat mat;
+      std::ranges::transform(arr_, rh.arr_, mat.arr_.begin(), std::plus<>());
+      return mat;
     }
 
     void operator-=(const Elem rh) noexcept
+      requires (kRow == kCol)
     {
-      Assert_if_not_regular();
-
-      for (std::size_t i = 0.; i < row_size_; ++i) {
+      for (std::size_t i = 0; i < kRow; ++i) {
         getf(i, i) -= rh;
       }
     }
 
     Mat operator-(const Elem rh) const noexcept
+      requires (kRow == kCol)
     {
-      Assert_if_not_regular();
-
-      Mat result = *this;
-      result -= rh;
-      return result;
+      Mat mat = *this;
+      mat -= rh;
+      return mat;
     }
 
-    void operator-=(const Mat rh) noexcept
+    template <typename Elem2, std::size_t kRow2, std::size_t kCol2>
+      requires (kRow2 == kCol2)
+    friend constexpr Matrix<Elem2, kRow2, kCol2> operator-(
+      const Elem2 lh, const Matrix<Elem2, kRow2, kCol2>& rh
+    ) noexcept
     {
-      Mat result;
-
-      std::transform(
-        arr_.begin(), arr_.end(), rh.arr_.begin(), arr_.begin(), std::minus<>()
-      );
+      return -(rh - lh);
     }
 
-    Mat operator-(const Mat rh) const noexcept
+    void operator-=(const Mat& rh) noexcept
     {
-      Mat result;
+      std::ranges::transform(arr_, rh.arr_, arr_.begin(), std::minus<>());
+    }
 
-      std::transform(
-        arr_.begin(), arr_.end(), rh.arr_.begin(), result.arr_.begin(),
-        std::minus<>()
-      );
-      return result;
+    Mat operator-(const Mat& rh) const noexcept
+    {
+      Mat mat;
+      std::ranges::transform(arr_, rh.arr_, mat.arr_.begin(), std::minus<>());
+      return mat;
     }
 
     void operator*=(const Elem rh) noexcept
     {
-      std::transform(
-        arr_.begin(), arr_.end(), arr_.begin(),
-        [rh](const Elem& elem) {
-          return elem * rh;
+      std::ranges::for_each(arr_,
+        [rh](Elem& elem) {
+          elem *= rh;
         }
       );
     }
 
     Mat operator*(const Elem rh) const noexcept
     {
-      Mat result;
-
-      std::transform(
-        arr_.begin(), arr_.end(), result.arr_.begin(),
+      Mat mat;
+      std::ranges::transform(arr_, mat.arr_.begin(),
         [rh](const Elem& elem) {
           return elem * rh;
         }
       );
-      return result;
+      return mat;
     }
 
-    template <std::size_t col_size2>
-    Matrix<Elem, row_size_, col_size2> operator*(
-      const Matrix<Elem, col_size_, col_size2> rh
+    template <typename Elem2, std::size_t kRow2, std::size_t kCol2>
+    friend constexpr Matrix<Elem2, kRow2, kCol2> operator*(
+      const Elem2 lh, const Matrix<Elem2, kRow2, kCol2>& rh
+    ) noexcept
+    {
+      return rh * lh;
+    }
+
+    template <std::size_t kCol2>
+    Matrix<Elem, kRow, kCol2> operator*(
+      const Matrix<Elem, kCol, kCol2>& rh
     ) const noexcept
     {
-      Matrix<Elem, row_size_, col_size2> result;
+      Matrix<Elem, kRow, kCol2> result;
 
-      for (std::size_t row = 0; row < row_size_; ++row) {
-        for (std::size_t col = 0; col < col_size2; ++col) {
+      for (std::size_t row = 0; row < kRow; ++row) {
+        for (std::size_t col = 0; col < kCol2; ++col) {
           Elem val = 0.;
-          for (std::size_t tmp = 0; tmp < col_size_; ++tmp) {
+          for (std::size_t tmp = 0; tmp < kCol; ++tmp) {
             val += cgetf(row, tmp) * rh.cgetf(tmp, col);
           }
           result.getf(row, col) = val;
@@ -218,22 +220,18 @@ namespace csp
 
 
     Elem trace() const noexcept
+      requires (kRow == kCol)
     {
-      Assert_if_not_regular();
-
-      Elem result;
-      for (std::size_t i = 0; i < row_size_; ++i) {
+      Elem result = 0;
+      for (std::size_t i = 0; i < kRow; ++i) {
         result += cgetf(i, i);
       }
       return result;
     }
 
-    Mat commute(
-      const Mat& rh
-    ) const noexcept
+    Mat commute(const Mat& rh) const noexcept
+      requires (kRow == kCol)
     {
-      Assert_if_not_regular();
-
       Mat result = (*this) * rh;
       Mat tmp = rh * (*this);
       result -= tmp;

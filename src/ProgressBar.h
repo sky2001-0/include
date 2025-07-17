@@ -1,8 +1,11 @@
-#ifndef CXXPROGRESSBAR_H
-#define CXXPROGRESSBAR_H
+#ifndef CXXTIME_H
+#define CXXTIME_H
 
+#include <atomic>
 #include <chrono>
 #include <cmath>
+#include <concepts>
+#include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <mutex>
@@ -11,30 +14,37 @@
 
 
 
-namespace csp
+namespace csp::time
 {
-  template<typename Integral>
+  [[deprecated]]
+  inline const std::string TimeStamp()
+  {
+    std::time_t now = std::chrono::system_clock::to_time_t(
+      std::chrono::system_clock::now()
+    );
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&now), "%Y-%m-%d_%H:%M:%S");
+    return ss.str();
+  }
+
+
+  template <std::integral T>
   class ProgressBar
   {
-    static_assert(
-      std::is_integral_v<Integral>,
-      "Template parameter Integral must be integral type."
-    );
-
-
     using steady_clock = std::chrono::steady_clock;
     using time_point = std::chrono::time_point<steady_clock>;
 
 
   private:
-    const Integral total_;
+    const T total_;
+    const T step_;
     const int bar_width_;
 
-    Integral progress_;
+    std::atomic<T> progress_;
 
     const time_point start_time_;
 
-    std::mutex mtx_;
+    std::mutex io_mutex_;
 
 
     static std::string DurationPrint(
@@ -80,11 +90,13 @@ namespace csp
       return DurationPrint(steady_clock::now() - time);
     }
 
-    void Draw() const noexcept
+    void Draw(const T progress) const noexcept
     {
+      std::lock_guard<std::mutex> lock(io_mutex_);
+
       std::stringstream ss;
       {
-        const int progress_width = bar_width_ * progress_ / total_;
+        const int progress_width = bar_width_ * progress / total_;
 
         ss << "[";
         for (int i = 0; i < progress_width; ++i) {
@@ -98,12 +110,12 @@ namespace csp
 
       ss << std::setfill(' ')
          << std::setw(3)
-         << 100 * progress_ / total_
+         << 100 * progress / total_
          << "% ";
 
       ss << DurationPrint(start_time_);
 
-      if (progress_ == total_) {
+      if (progress == total_) {
         std::cout << ss.str() << std::endl;
       } else {
         std::cout << ss.str() << "\r";
@@ -113,8 +125,9 @@ namespace csp
 
 
   public:
-    ProgressBar(const Integral total, const int bar_width = 70) noexcept
+    ProgressBar(const T total, const int bar_width = 70) noexcept
     : total_(total),
+      step_(std::max<T>(1, total_ / 100)),
       bar_width_(bar_width),
       progress_(0),
       start_time_(steady_clock::now())
@@ -131,14 +144,7 @@ namespace csp
 
     ProgressBar(const ProgressBar& rh) = delete;
 
-    ProgressBar(ProgressBar&& rh)
-    : total_(rh.total_),
-      bar_width_(rh.bar_width_),
-      progress_(rh.progress_),
-      start_time_(std::move(rh.start_time_)),
-      mtx_(std::move(rh.mtx_))
-    {
-    }
+    ProgressBar(ProgressBar&& rh) = delete;
 
     ProgressBar& operator=(const ProgressBar& rh) = delete;
 
@@ -147,34 +153,35 @@ namespace csp
 
     void operator++() noexcept
     {
-      std::lock_guard<std::mutex> lock(mtx_);
+      T progress = progress_.fetch_add(1) + 1;
 
-      ++progress_;
+      if (progress == 1) {
+        {
+          std::lock_guard<std::mutex> lock(io_mutex_);
+          std::cout
+            << "Estimated time : "
+            << DurationPrint((steady_clock::now() - start_time_) * total_)
+            << std::endl;
+        }
+        Draw(progress);
 
-      if (progress_ == 1) {
-        std::cout
-          << "Estimated time : "
-          << DurationPrint((steady_clock::now() - start_time_) * total_)
-          << std::endl;
-        Draw();
-
-      } else if (100 * (progress_ - 1) / total_ < 100 * progress_ / total_) {
-        Draw();
+      } else if (progress % step_ == 0 || progress == total_) {
+        Draw(progress);
       }
     }
 
-    Integral get_total() const noexcept
+    T get_total() const noexcept
     {
       return total_;
     }
 
-    Integral get_progress() const noexcept
+    T get_progress() const noexcept
     {
-      return progress_;
+      return progress_.load();
     }
   };
 }
 
 
 
-#endif // CXXPROGRESSBAR_H
+#endif // CXXTIME_H

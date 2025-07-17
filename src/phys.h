@@ -1,7 +1,5 @@
-#ifndef GLOBALS_H
-#define GLOBALS_H
-
-#include <complex>
+#ifndef PHYSCONSTANT_H
+#define PHYSCONSTANT_H
 
 
 
@@ -57,9 +55,8 @@ namespace u
   inline constexpr double V = J / C;
   inline constexpr double F = C * C / J;
 
-  inline constexpr double pi = 3.141592653589793; // pi
+  inline constexpr double pi = 3.141592653589793; // circle ratio
   inline constexpr double tau = 2. * pi;
-  inline constexpr std::complex<double> i = {0., 1.}; // imaginary units
   inline constexpr double sigma_1 = 0.68268949213708590; // 1 sigma probability
 
   inline constexpr double c = 2.99792458e+8 * m / s; // speed of light in vacuum
@@ -84,30 +81,5 @@ namespace u
 }
 
 
-namespace ps
-{
-  inline constexpr double m_free = 2 * u::m_e; // mass of unbind positronium
-  inline constexpr double ortho1S_binding_energy  = -6.80246955484722 * u::eV; // energy level of 1S ortho-positronium
-  inline constexpr double ortho2S_binding_energy  = -1.70068001565997 * u::eV; // energy level of 2S ortho-positronium
-  inline constexpr double ortho2P0_binding_energy = -1.70075651825776 * u::eV; // energy level of 2P0 ortho-positronium
-  inline constexpr double ortho2P1_binding_energy = -1.70073383065060 * u::eV; // energy level of 2P1 ortho-positronium
-  inline constexpr double ortho2P2_binding_energy = -1.70071569286024 * u::eV; // energy level of 2P2 ortho-positronium
 
-  inline constexpr double para1S_binding_energy = -6.80331071661968 * u::eV; // energy level of 1S para-positronium
-  inline constexpr double para2S_binding_energy = -1.70078516365589 * u::eV; // energy level of 2S para-positronium
-  inline constexpr double para2P_binding_energy = -1.70072627464065 * u::eV; // energy level of 2P para-positronium
-
-  inline constexpr double ortho1S_annihilation_rate = 7.039979 * u::MHz;
-  inline constexpr double para1S_annihilation_rate = 7.989618 * u::GHz;
-
-  inline constexpr double n_243 = 1.00030352; // refractive index at 243nm in the air
-  inline constexpr double m_1S = m_free + ortho1S_binding_energy / u::c / u::c; // mass of 1S ortho-positronium
-
-  inline constexpr double trans_angfreq = (ortho2P1_binding_energy - ortho1S_binding_energy) / u::hbar;
-  inline constexpr double recoil = u::hbar * trans_angfreq / u::c;
-  inline constexpr double recoil_angfreq = trans_angfreq * recoil / (m_1S * u::c);
-}
-
-
-
-#endif // GLOBALS_H
+#endif // PHYSCONSTANT_H

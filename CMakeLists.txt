@@ -1,13 +1,20 @@
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 project(CXXSupport VERSION 1.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 add_library(CXXSupport INTERFACE)
 
-target_include_directories(
-  CXXSupport INTERFACE
-  ${CMAKE_CURRENT_SOURCE_DIR}/src
+target_compile_features(CXXSupport INTERFACE cxx_std_20)
+
+target_include_directories(CXXSupport INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+  $<INSTALL_INTERFACE:include>
 )
+
+
+enable_testing()
+
+add_executable(test_cxx tests.cpp)
+target_link_libraries(test_cxx PRIVATE CXXSupport)
+
+add_test(NAME Vector3Test COMMAND test_cxx)
